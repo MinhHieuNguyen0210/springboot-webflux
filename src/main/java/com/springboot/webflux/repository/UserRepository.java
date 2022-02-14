@@ -16,4 +16,5 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     @Query(value = "SELECT u.email FROM \"user\" u INNER JOIN user_relationship ur ON u.id = ur.user_second_id WHERE ur.user_first_id = :id and ur.type = 1",nativeQuery = true)
     List<String> getFriendsListById (@Param("id") Integer id);
+
 }

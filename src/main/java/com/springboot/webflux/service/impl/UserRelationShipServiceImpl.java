@@ -14,7 +14,9 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 @Service
 public class UserRelationShipServiceImpl implements UserRelationShipService {
@@ -35,7 +37,7 @@ public class UserRelationShipServiceImpl implements UserRelationShipService {
 
     @Override
     public Mono<UserRelationship> findByUserFirstIdAndUserSecondId(Integer userFirstId, Integer userSecondId) {
-        return Mono.justOrEmpty(userRelationShipRepository.findByUserFirstIdAndUserSecondId(userFirstId,userSecondId)).
+        return Mono.justOrEmpty(userRelationShipRepository.findByUserFirstIdAndUserSecondId(userFirstId, userSecondId)).
                 switchIfEmpty(Mono.error(RuntimeException::new));
     }
 
@@ -48,7 +50,7 @@ public class UserRelationShipServiceImpl implements UserRelationShipService {
     @Override
     public Mono<FriendDto.Response> addFriends(FriendDto.Request request) {
         Mono<UserRelationship> relationFirstUser = connectByRelationType(request.getFriends(), AppConstant.RelationType.FRIEND);
-        Collections.swap(request.getFriends(),0,1);
+        Collections.swap(request.getFriends(), 0, 1);
         Mono<UserRelationship> relationSecondUser = connectByRelationType(request.getFriends(), AppConstant.RelationType.FRIEND);
 
         List<UserRelationship> userRelationshipList = new ArrayList<>();
@@ -84,7 +86,7 @@ public class UserRelationShipServiceImpl implements UserRelationShipService {
                 .flatMap(ur -> {
                     if (AppConstant.RelationType.FRIEND == ur.getType()) {
                         List<UserRelationship> userRelationshipList = new ArrayList<>();
-                        connectByRelationType(request.getFriends(), AppConstant.RelationType.BLOCK).subscribe(data ->userRelationshipList.add(data));
+                        connectByRelationType(request.getFriends(), AppConstant.RelationType.BLOCK).subscribe(data -> userRelationshipList.add(data));
                         return Flux.fromIterable(userRelationshipList).collectList()
                                 .flatMap(data -> Mono.just(FriendDto.Response.builder().success(true).relationships(data).build()));
                     }
@@ -104,7 +106,7 @@ public class UserRelationShipServiceImpl implements UserRelationShipService {
                 .map(User::getId)
                 .subscribe(id -> relationship.setUserSecondId(id));
 
-        switch (relationType){
+        switch (relationType) {
             case AppConstant.RelationType.FRIEND:
                 relationship.setType(AppConstant.RelationType.FRIEND);
                 break;
@@ -116,29 +118,43 @@ public class UserRelationShipServiceImpl implements UserRelationShipService {
                 break;
         }
 
-        return  createUserRelationShip(relationship);
+        return createUserRelationShip(relationship);
     }
 
     @Override
     public Mono<ReceiveUpdateDto.Response> getFriendsListCanReceiveUpdate(ReceiveUpdateDto.Request request) {
 
-        Mono<List<Integer>> listUserSecond = userService.findByEmail(request.getSender())
-                        .map(User::getId)
-                        .map(id -> userRelationShipRepository.getUserSecondByUserFirst(id));
+        List<String> userEmailResult = new ArrayList<>();
+
+        Mono<List<User>> users = Flux.fromIterable(userRepository.findAll()).collectList();
+
+        Mono<List<Integer>> listIdUserSecond = userService.findByEmail(request.getSender())
+                .map(User::getId)
+                .map(id -> userRelationShipRepository.getIdUserSecondByUserFirst(id));
 
         Mono<Integer> userFirst = userService.findByEmail(request.getSender()).map(User::getId);
-        List<Integer> userIdResult = new ArrayList<>();
-        return Mono.zip(userFirst, listUserSecond).flatMap(data ->{
-            for (Integer i : data.getT2()){
-                findByUserFirstIdAndUserSecondId(data.getT1(), i)
-                        .map(UserRelationship ::getType)
-                        .subscribe(type ->{
-                            if(type == AppConstant.RelationType.FRIEND || type == AppConstant.RelationType.SUBSCRIBE){
-                                userIdResult.add(i);
-                            }
-                        });
-            }
-            return null;
-        });
+
+        return Mono.zip(userFirst, listIdUserSecond, users)
+                .flatMap(data -> {
+                    for (Integer i : data.getT2()) {
+                        findByUserFirstIdAndUserSecondId(data.getT1(), i)
+                                .map(UserRelationship::getType)
+                                .subscribe(type -> {
+                                    if (type == AppConstant.RelationType.FRIEND || type == AppConstant.RelationType.SUBSCRIBE) {
+                                        userService.findById(i)
+                                                .map(User::getEmail)
+                                                .subscribe(email -> userEmailResult.add(email));
+                                    }
+                                });
+                    }
+                    for (User user : data.getT3()) {
+                        if (request.getText().contains(user.getEmail())) {
+                            userEmailResult.add(user.getEmail());
+                        }
+                    }
+                    return Mono.just(userEmailResult);
+                })
+                .flatMap(data -> Flux.fromIterable(data).collectList()
+                .flatMap(list -> Mono.just(ReceiveUpdateDto.Response.builder().recipients(list).success(true).build())));
     }
 }

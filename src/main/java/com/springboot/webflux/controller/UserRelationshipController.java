@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 import java.util.Collections;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -40,6 +41,6 @@ public class UserRelationshipController {
 
     @PostMapping("/user-relationship/receive-update")
     public Mono<ReceiveUpdateDto.Response> getFriendsListCanReceiveUpdate(@RequestBody ReceiveUpdateDto.Request request){
-        return userRelationShipService.getFriendsListCanReceiveUpdate(request);
+           return userRelationShipService.getFriendsListCanReceiveUpdate(request);
     }
 }
