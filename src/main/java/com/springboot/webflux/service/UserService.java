@@ -22,6 +22,6 @@ public interface UserService {
 
     Mono<CommonFriendDto.Response> getCommonFriend(CommonFriendDto.Request request);
 
-
+    Mono<Void> deleteAll();
 
 }

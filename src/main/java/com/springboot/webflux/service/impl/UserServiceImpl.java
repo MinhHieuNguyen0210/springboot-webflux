@@ -53,6 +53,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Mono<Void> deleteAll(){
+        userRepository.deleteAll();
+        return Mono.empty();
+    }
+    @Override
     public Mono<User> findById(Integer id) {
         return Mono.justOrEmpty(userRepository.findById(id))
                 .switchIfEmpty(Mono.error(RuntimeException::new));
