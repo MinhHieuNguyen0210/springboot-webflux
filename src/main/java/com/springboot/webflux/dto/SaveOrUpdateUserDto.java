@@ -12,7 +12,7 @@ public interface SaveOrUpdateUserDto {
     @NoArgsConstructor
     @Builder
     @Data
-    class Request{
+    class Request {
 
         private Integer id;
         private String email;
@@ -23,7 +23,7 @@ public interface SaveOrUpdateUserDto {
     @NoArgsConstructor
     @Builder
     @Data
-    class Response{
+    class Response {
 
         private Boolean success;
         private User user;

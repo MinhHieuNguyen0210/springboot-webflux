@@ -14,7 +14,7 @@ public interface GetFriendsListDto {
     @AllArgsConstructor
     @NoArgsConstructor
     @Builder
-    class Request{
+    class Request {
 
         @JsonProperty(value = "email")
         private String email;
@@ -25,14 +25,13 @@ public interface GetFriendsListDto {
     @AllArgsConstructor
     @NoArgsConstructor
     @Builder
-    class Response{
+    class Response {
 
         private Boolean success;
         private List<String> friends;
         private Integer count;
 
     }
-
 
 
 }

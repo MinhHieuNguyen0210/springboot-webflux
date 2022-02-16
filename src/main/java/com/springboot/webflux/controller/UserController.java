@@ -1,12 +1,13 @@
 package com.springboot.webflux.controller;
 
-import com.springboot.webflux.dto.*;
+import com.springboot.webflux.dto.CommonFriendDto;
+import com.springboot.webflux.dto.GetFriendsListDto;
+import com.springboot.webflux.dto.LoadAllUserDto;
+import com.springboot.webflux.dto.SaveOrUpdateUserDto;
 import com.springboot.webflux.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -31,7 +32,7 @@ public class UserController {
     }
 
     @PostMapping("/user/common-friends")
-    public Mono<CommonFriendDto.Response> getCommonFriends(@RequestBody CommonFriendDto.Request request){
+    public Mono<CommonFriendDto.Response> getCommonFriends(@RequestBody CommonFriendDto.Request request) {
         return userService.getCommonFriend(request);
     }
 

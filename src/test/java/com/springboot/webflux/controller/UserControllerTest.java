@@ -1,62 +1,106 @@
 package com.springboot.webflux.controller;
 
-import com.springboot.webflux.controller.UserController;
-import com.springboot.webflux.dto.LoadAllUserDto;
-import com.springboot.webflux.dto.SaveOrUpdateUserDto;
+import com.springboot.webflux.dto.CommonFriendDto;
+import com.springboot.webflux.dto.GetFriendsListDto;
 import com.springboot.webflux.entity.User;
 import com.springboot.webflux.repository.UserRepository;
-import com.springboot.webflux.service.UserService;
-import com.springboot.webflux.service.impl.UserServiceImpl;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+
+import static org.mockito.ArgumentMatchers.any;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class UserControllerTest {
+class UserControllerTest {
 
     @Autowired
     WebTestClient webTestClient;
 
-    @InjectMocks
-    private UserServiceImpl userService;
-
-    @Mock
+    @MockBean
     private UserRepository userRepository;
 
     @Test
-    void getAllUser(){
-        List<User> userList = Arrays.asList(new User(1,"a@gmail.com"), new User(2,"b@gmail.com"));
-        Mono<LoadAllUserDto.Response> userMono = Mono.just(LoadAllUserDto.Response.builder().users(userList).success(true).build());
-        Mockito.when(userService.loadAllUser()).thenReturn(userMono);
+    void getAllUser() {
+        List<User> userList = Arrays.asList(new User(1, "a@gmail.com"), new User(2, "b@gmail.com"));
+
+        Mockito.when(userRepository.findAll()).thenReturn(userList);
 
         webTestClient.get()
-                .uri("/users")
+                .uri("/api/v1/users")
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isOk()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
                 .expectBody()
-                .jsonPath("$.success").isEqualTo(true);
+                .jsonPath("$.success").isEqualTo(true)
+                .jsonPath("$.users[0].id").isEqualTo(1)
+                .jsonPath("$.users[0].email").isEqualTo("a@gmail.com")
+                .jsonPath("$.users[1].id").isEqualTo(2)
+                .jsonPath("$.users[1].email").isEqualTo("b@gmail.com");
+    }
+
+    @Test
+    void insertByUser() {
+        User bodyData = User.builder().id(10).email("test@gmail.com").build();
+        Mockito.when(userRepository.save(any())).thenReturn(User.builder().id(10).email("test@gmail.com").build());
+
+        webTestClient.post()
+                .uri("/api/v1/")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(Mono.just(bodyData), User.class)
+                .exchange()
+                .expectStatus().is2xxSuccessful()
+                .expectBody()
+                .jsonPath("$.success").isEqualTo(true)
+                .jsonPath("$.user.id").isEqualTo(10)
+                .jsonPath("$.user.email").isEqualTo("test@gmail.com");
+    }
+
+    @Test
+    void getFriendList() {
+        GetFriendsListDto.Request body = GetFriendsListDto.Request.builder().email("test@gmail.com").build();
+        Mockito.when(userRepository.findByEmail(any())).thenReturn(Optional.of(new User(1, "test@gmail.com")));
+        Mockito.when(userRepository.getFriendsListById(any())).thenReturn(Arrays.asList("foo@gmail.com", "bar@gmail.com"));
+
+        webTestClient.post()
+                .uri("/api/v1/user/friends-list")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(Mono.just(body), GetFriendsListDto.Request.class)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.count").isEqualTo(2);
+    }
+
+    @Test
+    void getCommonFriend() {
+        CommonFriendDto.Request body = CommonFriendDto.Request.builder().friends(Arrays.asList("userFirst@gmail.com", "userSecond@gmail.com")).build();
+
+        Mockito.when(userRepository.findByEmail(body.getFriends().get(0))).thenReturn(Optional.of(new User(1, "userFirst@gmail.com")));
+        Mockito.when(userRepository.getFriendsListById(1)).thenReturn(Arrays.asList("foo@gmail.com", "bar@gmail.com"));
+
+        Mockito.when(userRepository.findByEmail(body.getFriends().get(1))).thenReturn(Optional.of(new User(2, "userSecond@gmail.com")));
+        Mockito.when(userRepository.getFriendsListById(2)).thenReturn(Arrays.asList("foo@gmail.com", "bar@gmail.com", "zoo@gmail.com"));
+
+        webTestClient.post()
+                .uri("/api/v1/user/common-friends")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(Mono.just(body), CommonFriendDto.Request.class)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.count").isEqualTo(2);
     }
 
 }

@@ -155,6 +155,6 @@ public class UserRelationShipServiceImpl implements UserRelationShipService {
                     return Mono.just(userEmailResult);
                 })
                 .flatMap(data -> Flux.fromIterable(data).collectList()
-                .flatMap(list -> Mono.just(ReceiveUpdateDto.Response.builder().recipients(list).success(true).build())));
+                        .flatMap(list -> Mono.just(ReceiveUpdateDto.Response.builder().recipients(list).success(true).build())));
     }
 }

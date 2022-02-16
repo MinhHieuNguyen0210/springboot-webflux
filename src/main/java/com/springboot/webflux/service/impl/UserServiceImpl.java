@@ -1,17 +1,21 @@
 package com.springboot.webflux.service.impl;
 
-import com.springboot.webflux.dto.*;
+import com.springboot.webflux.dto.CommonFriendDto;
+import com.springboot.webflux.dto.GetFriendsListDto;
+import com.springboot.webflux.dto.LoadAllUserDto;
+import com.springboot.webflux.dto.SaveOrUpdateUserDto;
 import com.springboot.webflux.entity.User;
-import com.springboot.webflux.entity.UserRelationship;
 import com.springboot.webflux.repository.UserRepository;
-import com.springboot.webflux.service.UserRelationShipService;
 import com.springboot.webflux.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -53,10 +57,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Mono<Void> deleteAll(){
+    public Mono<Void> deleteAll() {
         userRepository.deleteAll();
         return Mono.empty();
     }
+
     @Override
     public Mono<User> findById(Integer id) {
         return Mono.justOrEmpty(userRepository.findById(id))
@@ -86,13 +91,13 @@ public class UserServiceImpl implements UserService {
         Mono<List<String>> mono2 = getFriendsListByEmail(GetFriendsListDto.Request.builder().email(request.getFriends().get(1)).build())
                 .map(GetFriendsListDto.Response::getFriends);
         List<String> commonFriends = new ArrayList<>();
-        return Mono.zip(mono1,mono2).flatMap((data) -> {
+        return Mono.zip(mono1, mono2).flatMap((data) -> {
             Set<String> map = new HashSet<>();
-            for(String i : data.getT1()){
+            for (String i : data.getT1()) {
                 map.add(i);
             }
-            for(String i : data.getT2()){
-                if(map.contains(i)){
+            for (String i : data.getT2()) {
+                if (map.contains(i)) {
                     commonFriends.add(i);
                 }
             }

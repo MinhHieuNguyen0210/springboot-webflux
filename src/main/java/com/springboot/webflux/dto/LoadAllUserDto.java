@@ -14,7 +14,7 @@ public interface LoadAllUserDto {
     @AllArgsConstructor
     @Data
     @Builder
-    class Response{
+    class Response {
 
         private Boolean success;
         private List<User> users;

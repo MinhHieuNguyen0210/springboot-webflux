@@ -14,7 +14,7 @@ public interface CommonFriendDto {
     @AllArgsConstructor
     @Data
     @Builder
-    class Request{
+    class Request {
 
         @JsonProperty(value = "friends")
         private List<String> friends;
@@ -25,7 +25,7 @@ public interface CommonFriendDto {
     @AllArgsConstructor
     @Data
     @Builder
-    class Response{
+    class Response {
 
         private Boolean success;
         private List<String> friends;

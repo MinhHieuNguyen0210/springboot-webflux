@@ -7,7 +7,6 @@ import com.springboot.webflux.entity.User;
 import com.springboot.webflux.repository.UserRepository;
 import com.springboot.webflux.service.impl.UserServiceImpl;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -17,6 +16,7 @@ import reactor.test.StepVerifier;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 import static org.mockito.ArgumentMatchers.any;
 
@@ -70,7 +70,7 @@ public class UserServiceTest {
         StepVerifier
                 .create(userService.update(10, request))
                 .expectErrorMatches(throwable -> throwable instanceof RuntimeException
-                                                && throwable.getMessage().equals("update exception"))
+                        && throwable.getMessage().equals("update exception"))
                 .verify();
     }
 
@@ -93,22 +93,36 @@ public class UserServiceTest {
     }
 
     @Test
-    public void getFriendsListByEmail(){
+    public void getFriendsListByEmail() {
         GetFriendsListDto.Request request = GetFriendsListDto.Request.builder().email("test@gmail.com").build();
-        Mockito.when(userRepository.getFriendsListById(any())).thenReturn(Arrays.asList("foo@gmail.com","bar@gmail.com"));
+        Mockito.when(userRepository.findByEmail(any())).thenReturn(Optional.of(new User(1, "test@gmail.com")));
+        Mockito.when(userRepository.getFriendsListById(any())).thenReturn(Arrays.asList("foo@gmail.com", "bar@gmail.com"));
         StepVerifier
                 .create(userService.getFriendsListByEmail(request))
-                .expectNextMatches(data -> data.getFriends().size() == 2);
-
-
+                .expectNextMatches(data -> data.getFriends().size() == 2)
+                .verifyComplete();
     }
 
     @Test
-    public void getCommonFriend(){
-       CommonFriendDto.Request request = CommonFriendDto.Request.builder().friends(Arrays.asList("a@gmail.com","b@gmail.com")).build();
-        Mockito.when(userRepository.getFriendsListById(any())).thenReturn(Arrays.asList("foo@gmail.com","bar@gmail.com"));
+    public void getCommonFriend() {
+        List<String> userEmails = Arrays.asList("userFirst@gmail.com", "userSecond@gmail.com");
+        CommonFriendDto.Request request = CommonFriendDto.Request.builder().friends(userEmails).build();
+
+        Mockito.when(userRepository.findByEmail(userEmails.get(0))).thenReturn(Optional.of(new User(1, "userFirst@gmail.com")));
+        Mockito.when(userRepository.getFriendsListById(1)).thenReturn(Arrays.asList("foo@gmail.com", "bar@gmail.com"));
+
+        Mockito.when(userRepository.findByEmail(userEmails.get(1))).thenReturn(Optional.of(new User(2, "userSecond@gmail.com")));
+        Mockito.when(userRepository.getFriendsListById(2)).thenReturn(Arrays.asList("foo@gmail.com", "bar@gmail.com", "zoo@gmail.com"));
+
+        Predicate<CommonFriendDto.Response> p = response -> {
+            return response.getFriends().get(0).equals("foo@gmail.com")
+                    && response.getFriends().get(1).equals("bar@gmail.com")
+                    && response.getCount() == 2;
+        };
+
         StepVerifier
                 .create(userService.getCommonFriend(request))
-                .expectNextMatches(data -> data.getSuccess().equals(true));
+                .expectNextMatches(p)
+                .verifyComplete();
     }
 }

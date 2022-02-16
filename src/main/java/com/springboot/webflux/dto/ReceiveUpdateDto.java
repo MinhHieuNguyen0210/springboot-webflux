@@ -26,8 +26,8 @@ public interface ReceiveUpdateDto {
     @Builder
     class Response {
 
-        private Boolean success;
         List<String> recipients;
+        private Boolean success;
 
     }
 

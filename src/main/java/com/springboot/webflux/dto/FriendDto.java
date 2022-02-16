@@ -30,9 +30,8 @@ public interface FriendDto {
     @Data
     class Response {
 
-        private Boolean success;
-
         List<UserRelationship> relationships;
+        private Boolean success;
 
     }
 
