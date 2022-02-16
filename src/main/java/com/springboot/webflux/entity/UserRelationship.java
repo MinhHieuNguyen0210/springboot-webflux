@@ -1,6 +1,7 @@
 package com.springboot.webflux.entity;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,6 +12,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+@Builder
 @Table(name = UserRelationship.TABLE_NAME, schema = "public")
 @IdClass(UserRelationshipId.class)
 public class UserRelationship implements Serializable {

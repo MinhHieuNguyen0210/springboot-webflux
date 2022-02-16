@@ -1,4 +1,4 @@
-package com.springboot.webflux;
+package com.springboot.webflux.controller;
 
 import com.springboot.webflux.controller.UserController;
 import com.springboot.webflux.dto.LoadAllUserDto;

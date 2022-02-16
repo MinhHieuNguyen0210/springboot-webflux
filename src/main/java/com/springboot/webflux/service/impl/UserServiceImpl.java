@@ -39,11 +39,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public Mono<SaveOrUpdateUserDto.Response> update(Integer id, SaveOrUpdateUserDto.Request dto) {
         User entity = User.builder().id(dto.getId()).email(dto.getEmail()).build();
-        if (Objects.nonNull(findById(id))) {
+        if (findById(id).hasElement().block() == true) {
             Mono<User> user = Mono.just(userRepository.save(entity));
             return user.flatMap(data -> Mono.just(SaveOrUpdateUserDto.Response.builder().success(true).user(data).build()));
         }
-        return Mono.error(RuntimeException::new);
+        return Mono.error(new RuntimeException("update exception"));
     }
 
     @Override
@@ -60,7 +60,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Mono<User> findById(Integer id) {
         return Mono.justOrEmpty(userRepository.findById(id))
-                .switchIfEmpty(Mono.error(RuntimeException::new));
+                .switchIfEmpty(Mono.empty());
     }
 
     @Override

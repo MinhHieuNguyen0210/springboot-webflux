@@ -1,4 +1,4 @@
-package com.springboot.webflux;
+package com.springboot.webflux.service;
 
 import com.springboot.webflux.dto.CommonFriendDto;
 import com.springboot.webflux.dto.GetFriendsListDto;
@@ -32,7 +32,7 @@ public class UserServiceTest {
     @Test
     public void save() {
         SaveOrUpdateUserDto.Request request = SaveOrUpdateUserDto.Request.builder().id(10).email("test@gmail.com").build();
-        Mockito.when(userRepository.save(any())).thenReturn(User.builder().email("test@gmail.com").build());
+        Mockito.when(userRepository.save(any())).thenReturn(User.builder().id(10).email("test@gmail.com").build());
         StepVerifier
                 .create(userService.insertByUser(request))
                 .expectNextMatches(saved -> saved.getUser().getEmail().equalsIgnoreCase("test@gmail.com"))
@@ -52,12 +52,26 @@ public class UserServiceTest {
     @Test
     public void update() {
         SaveOrUpdateUserDto.Request request = SaveOrUpdateUserDto.Request.builder().id(10).email("testUpdate@gmail.com").build();
+        Mockito.when(userRepository.findById(any())).thenReturn(Optional.of(User.builder().email("test@gmail.com").id(10).build()));
         Mockito.when(userRepository.save(any())).thenReturn(User.builder().email("testUpdate@gmail.com").build());
+
 
         StepVerifier
                 .create(userService.update(10, request))
                 .expectNextMatches(data -> data.getUser().getEmail().equalsIgnoreCase("testUpdate@gmail.com"))
                 .verifyComplete();
+    }
+
+    @Test
+    public void updateError() {
+        SaveOrUpdateUserDto.Request request = SaveOrUpdateUserDto.Request.builder().id(10).email("testUpdate@gmail.com").build();
+        Mockito.when(userRepository.findById(any())).thenReturn(null);
+
+        StepVerifier
+                .create(userService.update(10, request))
+                .expectErrorMatches(throwable -> throwable instanceof RuntimeException
+                                                && throwable.getMessage().equals("update exception"))
+                .verify();
     }
 
     @Test
