@@ -40,7 +40,7 @@ public class UserRelationshipControllerTest {
     UserRepository userRepository;
 
     @Test
-    void addFriends(){
+    void addFriends() {
         List<String> userEmails = Arrays.asList("a@gmail.com", "b@gmail.com");
         FriendDto.Request request = FriendDto.Request.builder().friends(userEmails).build();
 
@@ -65,7 +65,7 @@ public class UserRelationshipControllerTest {
     }
 
     @Test
-    void subscribeFriend(){
+    void subscribeFriend() {
         List<String> userEmails = Arrays.asList("a@gmail.com", "b@gmail.com");
         FriendDto.Request request = FriendDto.Request.builder().friends(userEmails).build();
         Mockito.when(userService.findByEmail(userEmails.get(0))).thenReturn(Mono.just(new User(10, "a@gmail.com")));
@@ -75,7 +75,7 @@ public class UserRelationshipControllerTest {
         webTestClient.post()
                 .uri("/api/v1/user-relationship/subscribe")
                 .accept(MediaType.APPLICATION_JSON)
-                .body(Mono.just(request),FriendDto.Request.class)
+                .body(Mono.just(request), FriendDto.Request.class)
                 .exchange()
                 .expectStatus().isOk()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
@@ -84,7 +84,7 @@ public class UserRelationshipControllerTest {
     }
 
     @Test
-    void findBy2Id(){
+    void findBy2Id() {
         Integer idUserFirst = 1;
         Integer idUserSecond = 2;
 
@@ -92,7 +92,7 @@ public class UserRelationshipControllerTest {
                 thenReturn(new UserRelationship(1, 2, AppConstant.RelationType.FRIEND));
 
         webTestClient.get()
-                .uri("/api/v1/user-relationship/"+idUserFirst+"/"+idUserSecond)
+                .uri("/api/v1/user-relationship/" + idUserFirst + "/" + idUserSecond)
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isOk()
@@ -102,7 +102,7 @@ public class UserRelationshipControllerTest {
     }
 
     @Test
-    void blockFriend(){
+    void blockFriend() {
         FriendDto.Request request = FriendDto.Request.builder().friends(Arrays.asList("a@gmail.com", "b@gmail.com")).build();
         Mockito.when(userService.findByEmail(request.getFriends().get(0))).thenReturn(Mono.just(new User(10, "a@gmail.com")));
         Mockito.when(userService.findByEmail(request.getFriends().get(1))).thenReturn(Mono.just(new User(11, "b@gmail.com")));
@@ -113,7 +113,7 @@ public class UserRelationshipControllerTest {
         webTestClient.post()
                 .uri("/api/v1/user-relationship/block")
                 .accept(MediaType.APPLICATION_JSON)
-                .body(Mono.just(request),FriendDto.Request.class)
+                .body(Mono.just(request), FriendDto.Request.class)
                 .exchange()
                 .expectStatus().isOk()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
@@ -122,7 +122,7 @@ public class UserRelationshipControllerTest {
     }
 
     @Test
-    void getFriendsListCanReceiveUpdate(){
+    void getFriendsListCanReceiveUpdate() {
         ReceiveUpdateDto.Request request = ReceiveUpdateDto.Request.builder().sender("sender@gmail.com").text("hello! foo@gmail.com").build();
         Mockito.when(userRepository.findAll()).thenReturn(Arrays.asList(
                 new User(10, "a@gmail.com"),
@@ -147,7 +147,7 @@ public class UserRelationshipControllerTest {
         webTestClient.post()
                 .uri("/api/v1/user-relationship/receive-update")
                 .accept(MediaType.APPLICATION_JSON)
-                .body(Mono.just(request),FriendDto.Request.class)
+                .body(Mono.just(request), FriendDto.Request.class)
                 .exchange()
                 .expectStatus().isOk()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)

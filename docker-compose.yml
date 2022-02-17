@@ -1,0 +1,32 @@
+version: '3.7'
+
+services:
+  db:
+    container_name: db
+    image: postgres:latest
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=mypgdb
+    ports:
+      - "5435:5432"
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - fm-network
+  app:
+    container_name: friends-managements-spring-boot
+    restart: unless-stopped
+    build: ./
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    networks:
+      - fm-network
+
+networks:
+  fm-network:
+    driver: bridge
+

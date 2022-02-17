@@ -154,7 +154,7 @@ class UserRelationshipServiceTest {
         Mockito.when(userService.findById(11)).thenReturn(Mono.just(new User(11, "b@gmail.com")));
 
         Predicate<ReceiveUpdateDto.Response> p = response -> {
-                return response.getRecipients().get(0).equals("a@gmail.com")
+            return response.getRecipients().get(0).equals("a@gmail.com")
                     && response.getRecipients().get(1).equals("b@gmail.com")
                     && response.getRecipients().get(2).equals("foo@gmail.com")
                     && response.getRecipients().size() == 3;
