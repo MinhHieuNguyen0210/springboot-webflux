@@ -7,7 +7,6 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
@@ -76,26 +75,26 @@ public class UserRepositoryTest {
     }
 
     @Test
-    public void deleteById(){
-        User user1 = new User( "foo@gmail.com");
+    public void deleteById() {
+        User user1 = new User("foo@gmail.com");
         entityManager.persist(user1);
-        User user2 = new User( "bar@gmail.com");
+        User user2 = new User("bar@gmail.com");
         entityManager.persist(user2);
-        User user3 = new User( "zoo@gmail.com");
+        User user3 = new User("zoo@gmail.com");
         entityManager.persist(user3);
 
         userRepository.deleteById(user2.getId());
         Iterable<User> users = userRepository.findAll();
-        Assertions.assertThat(users).hasSize(2).contains(user1,user3);
+        Assertions.assertThat(users).hasSize(2).contains(user1, user3);
     }
 
     @Test
-    public void deleteAll(){
+    public void deleteAll() {
         User user1 = new User("foo@gmail.com");
         entityManager.persist(user1);
-        User user2 = new User( "bar@gmail.com");
+        User user2 = new User("bar@gmail.com");
         entityManager.persist(user2);
-        User user3 = new User( "zoo@gmail.com");
+        User user3 = new User("zoo@gmail.com");
         entityManager.persist(user3);
 
         userRepository.deleteAll();

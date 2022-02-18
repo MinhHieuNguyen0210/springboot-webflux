@@ -1,7 +1,6 @@
 package com.springboot.webflux.repository;
 
 import com.springboot.webflux.common.AppConstant;
-import com.springboot.webflux.entity.User;
 import com.springboot.webflux.entity.UserRelationship;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
@@ -24,12 +23,12 @@ public class UserRelationshipRepositoryTest {
     private TestEntityManager entityManager;
 
     @Test
-    public void findAll(){
-        UserRelationship relationship1 = new UserRelationship(1,2, AppConstant.RelationType.FRIEND);
+    public void findAll() {
+        UserRelationship relationship1 = new UserRelationship(1, 2, AppConstant.RelationType.FRIEND);
         entityManager.persist(relationship1);
-        UserRelationship relationship2 = new UserRelationship(1,3, AppConstant.RelationType.SUBSCRIBE);
+        UserRelationship relationship2 = new UserRelationship(1, 3, AppConstant.RelationType.SUBSCRIBE);
         entityManager.persist(relationship2);
-        UserRelationship relationship3 = new UserRelationship(1,4, AppConstant.RelationType.BLOCK);
+        UserRelationship relationship3 = new UserRelationship(1, 4, AppConstant.RelationType.BLOCK);
         entityManager.persist(relationship3);
 
         Iterable<UserRelationship> userRelationships = repository.findAll();
@@ -37,33 +36,33 @@ public class UserRelationshipRepositoryTest {
     }
 
     @Test
-    public void save(){
-        UserRelationship relationship = repository.save(new UserRelationship(1,2, AppConstant.RelationType.FRIEND));
-        Assertions.assertThat(relationship).hasFieldOrPropertyWithValue("userFirstId",1);
-        Assertions.assertThat(relationship).hasFieldOrPropertyWithValue("userSecondId",2);
+    public void save() {
+        UserRelationship relationship = repository.save(new UserRelationship(1, 2, AppConstant.RelationType.FRIEND));
+        Assertions.assertThat(relationship).hasFieldOrPropertyWithValue("userFirstId", 1);
+        Assertions.assertThat(relationship).hasFieldOrPropertyWithValue("userSecondId", 2);
         Assertions.assertThat(relationship).hasFieldOrPropertyWithValue("type", AppConstant.RelationType.FRIEND);
     }
 
     @Test
-    public void findByUserFirstIdAndUserSecondId(){
-        UserRelationship relationship1 = new UserRelationship(1,2, AppConstant.RelationType.FRIEND);
+    public void findByUserFirstIdAndUserSecondId() {
+        UserRelationship relationship1 = new UserRelationship(1, 2, AppConstant.RelationType.FRIEND);
         entityManager.persist(relationship1);
-        UserRelationship relationship2 = new UserRelationship(1,3, AppConstant.RelationType.SUBSCRIBE);
+        UserRelationship relationship2 = new UserRelationship(1, 3, AppConstant.RelationType.SUBSCRIBE);
         entityManager.persist(relationship2);
-        UserRelationship relationship3 = new UserRelationship(1,4, AppConstant.RelationType.BLOCK);
+        UserRelationship relationship3 = new UserRelationship(1, 4, AppConstant.RelationType.BLOCK);
         entityManager.persist(relationship3);
 
-        UserRelationship foundRelation = repository.findByUserFirstIdAndUserSecondId(1,2);
+        UserRelationship foundRelation = repository.findByUserFirstIdAndUserSecondId(1, 2);
         Assertions.assertThat(foundRelation).isEqualTo(relationship1);
     }
 
     @Test
-    public void getIdUserSecondByUserFirst(){
-        UserRelationship relationship1 = new UserRelationship(1,2, AppConstant.RelationType.FRIEND);
+    public void getIdUserSecondByUserFirst() {
+        UserRelationship relationship1 = new UserRelationship(1, 2, AppConstant.RelationType.FRIEND);
         entityManager.persist(relationship1);
-        UserRelationship relationship2 = new UserRelationship(1,3, AppConstant.RelationType.SUBSCRIBE);
+        UserRelationship relationship2 = new UserRelationship(1, 3, AppConstant.RelationType.SUBSCRIBE);
         entityManager.persist(relationship2);
-        UserRelationship relationship3 = new UserRelationship(1,4, AppConstant.RelationType.BLOCK);
+        UserRelationship relationship3 = new UserRelationship(1, 4, AppConstant.RelationType.BLOCK);
         entityManager.persist(relationship3);
 
         List<Integer> listIdUserSecond = repository.getIdUserSecondByUserFirst(1);

@@ -125,4 +125,24 @@ public class UserServiceTest {
                 .expectNextMatches(p)
                 .verifyComplete();
     }
+
+    @Test
+    public void deleteById() {
+        Mockito.doNothing().when(userRepository).deleteById(any());
+        userService.deleteById(1);
+        Mockito.verify(userRepository, Mockito.times(1)).deleteById(1);
+
+        StepVerifier
+                .create(userService.deleteById(1))
+                .expectSubscription()
+                .verifyComplete();
+    }
+
+    @Test
+    public void deleteAll() {
+        Mockito.doNothing().when(userRepository).deleteAll();
+        userService.deleteAll();
+        Mockito.verify(userRepository, Mockito.times(1)).deleteAll();
+    }
+
 }
