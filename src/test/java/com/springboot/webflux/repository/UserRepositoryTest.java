@@ -12,7 +12,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
-@Sql(scripts = "classpath:data-test.sql")
+//@Sql(scripts = "classpath:data-test.sql")
 public class UserRepositoryTest {
 
     @Autowired
@@ -46,7 +46,7 @@ public class UserRepositoryTest {
         User user2 = new User(2, "bar@gmail.com");
         entityManager.persist(user2);
         User foundUser = userRepository.findByEmail("foo@gmail.com").orElse(new User());
-        Assertions.assertThat(foundUser).isEqualTo(user2);
+        Assertions.assertThat(foundUser).isEqualTo(user1);
     }
 
     @Test
@@ -74,5 +74,32 @@ public class UserRepositoryTest {
 
         Assertions.assertThat(updated.getId()).isEqualTo(user2.getId());
         Assertions.assertThat(updated.getEmail()).isEqualTo(user2.getEmail());
+    }
+
+    @Test
+    public void deleteById(){
+        User user1 = new User(1, "foo@gmail.com");
+        entityManager.persist(user1);
+        User user2 = new User(2, "bar@gmail.com");
+        entityManager.persist(user2);
+        User user3 = new User(3, "zoo@gmail.com");
+        entityManager.persist(user3);
+
+        userRepository.deleteById(2);
+        Iterable<User> users = userRepository.findAll();
+        Assertions.assertThat(users).hasSize(2).contains(user1,user3);
+    }
+
+    @Test
+    public void deleteAll(){
+        User user1 = new User(1, "foo@gmail.com");
+        entityManager.persist(user1);
+        User user2 = new User(2, "bar@gmail.com");
+        entityManager.persist(user2);
+        User user3 = new User(3, "zoo@gmail.com");
+        entityManager.persist(user3);
+
+        userRepository.deleteAll();
+        Assertions.assertThat(userRepository.findAll()).isEmpty();
     }
 }

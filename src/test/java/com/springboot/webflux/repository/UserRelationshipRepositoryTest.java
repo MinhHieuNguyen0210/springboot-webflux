@@ -11,6 +11,8 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.List;
+
 @RunWith(SpringRunner.class)
 @DataJpaTest
 public class UserRelationshipRepositoryTest {
@@ -44,6 +46,28 @@ public class UserRelationshipRepositoryTest {
 
     @Test
     public void findByUserFirstIdAndUserSecondId(){
+        UserRelationship relationship1 = new UserRelationship(1,2, AppConstant.RelationType.FRIEND);
+        entityManager.persist(relationship1);
+        UserRelationship relationship2 = new UserRelationship(1,3, AppConstant.RelationType.SUBSCRIBE);
+        entityManager.persist(relationship2);
+        UserRelationship relationship3 = new UserRelationship(1,4, AppConstant.RelationType.BLOCK);
+        entityManager.persist(relationship3);
 
+        UserRelationship foundRelation = repository.findByUserFirstIdAndUserSecondId(1,2);
+        Assertions.assertThat(foundRelation).isEqualTo(relationship1);
+    }
+
+    @Test
+    public void getIdUserSecondByUserFirst(){
+        UserRelationship relationship1 = new UserRelationship(1,2, AppConstant.RelationType.FRIEND);
+        entityManager.persist(relationship1);
+        UserRelationship relationship2 = new UserRelationship(1,3, AppConstant.RelationType.SUBSCRIBE);
+        entityManager.persist(relationship2);
+        UserRelationship relationship3 = new UserRelationship(1,4, AppConstant.RelationType.BLOCK);
+        entityManager.persist(relationship3);
+
+        List<Integer> listIdUserSecond = repository.getIdUserSecondByUserFirst(1);
+
+        Assertions.assertThat(listIdUserSecond).hasSize(3);
     }
 }
