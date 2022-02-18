@@ -80,7 +80,7 @@ public class UserRelationshipControllerTest {
                 .expectStatus().isOk()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
                 .expectBody()
-                .jsonPath("$.relationships[0].type").isEqualTo(3);
+                .jsonPath("$.success").isEqualTo(true);
     }
 
     @Test

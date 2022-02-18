@@ -1,5 +1,6 @@
 package com.springboot.webflux.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.springboot.webflux.entity.UserRelationship;
 import lombok.AllArgsConstructor;

@@ -23,7 +23,7 @@ public class UserRepositoryTest {
 
     @Test
     public void findAll() {
-        User user1 = new User(1, "test@gmail.com");
+        User user1 = new User("test@gmail.com");
         entityManager.persist(user1);
         Iterable<User> users = userRepository.findAll();
         Assertions.assertThat(users).hasSize(1).contains(user1);
@@ -31,19 +31,19 @@ public class UserRepositoryTest {
 
     @Test
     public void findById() {
-        User user1 = new User(1, "foo@gmail.com");
+        User user1 = new User("foo@gmail.com");
         entityManager.persist(user1);
-        User user2 = new User(2, "bar@gmail.com");
+        User user2 = new User("bar@gmail.com");
         entityManager.persist(user2);
-        User foundUser = userRepository.findById(1).orElse(new User());
+        User foundUser = userRepository.findById(user1.getId()).orElse(new User());
         Assertions.assertThat(foundUser).isEqualTo(user1);
     }
 
     @Test
     public void findByEmail() {
-        User user1 = new User(1, "foo@gmail.com");
+        User user1 = new User("foo@gmail.com");
         entityManager.persist(user1);
-        User user2 = new User(2, "bar@gmail.com");
+        User user2 = new User("bar@gmail.com");
         entityManager.persist(user2);
         User foundUser = userRepository.findByEmail("foo@gmail.com").orElse(new User());
         Assertions.assertThat(foundUser).isEqualTo(user1);
@@ -51,22 +51,21 @@ public class UserRepositoryTest {
 
     @Test
     public void save() {
-        User user = userRepository.save(new User(10, "testuser@gmail.com"));
-        Assertions.assertThat(user).hasFieldOrPropertyWithValue("id", 10);
+        User user = userRepository.save(new User("testuser@gmail.com"));
+        Assertions.assertThat(user).hasFieldOrPropertyWithValue("id", user.getId());
         Assertions.assertThat(user).hasFieldOrPropertyWithValue("email", "testuser@gmail.com");
     }
 
     @Test
     public void updateById() {
-        User user1 = new User(1, "foo@gmail.com");
+        User user1 = new User("foo@gmail.com");
         entityManager.persist(user1);
-        User user2 = new User(2, "bar@gmail.com");
+        User user2 = new User("bar@gmail.com");
         entityManager.persist(user2);
 
-        User userUpdate = new User(2, "emailUpdate@gmail.com");
+        User userUpdate = new User("emailUpdate@gmail.com");
 
-        User checkUserUpdate = userRepository.findById(2).orElse(new User());
-        checkUserUpdate.setId(userUpdate.getId());
+        User checkUserUpdate = userRepository.findById(user2.getId()).orElse(new User());
         checkUserUpdate.setEmail(userUpdate.getEmail());
         userRepository.save(checkUserUpdate);
 
@@ -78,25 +77,25 @@ public class UserRepositoryTest {
 
     @Test
     public void deleteById(){
-        User user1 = new User(1, "foo@gmail.com");
+        User user1 = new User( "foo@gmail.com");
         entityManager.persist(user1);
-        User user2 = new User(2, "bar@gmail.com");
+        User user2 = new User( "bar@gmail.com");
         entityManager.persist(user2);
-        User user3 = new User(3, "zoo@gmail.com");
+        User user3 = new User( "zoo@gmail.com");
         entityManager.persist(user3);
 
-        userRepository.deleteById(2);
+        userRepository.deleteById(user2.getId());
         Iterable<User> users = userRepository.findAll();
         Assertions.assertThat(users).hasSize(2).contains(user1,user3);
     }
 
     @Test
     public void deleteAll(){
-        User user1 = new User(1, "foo@gmail.com");
+        User user1 = new User("foo@gmail.com");
         entityManager.persist(user1);
-        User user2 = new User(2, "bar@gmail.com");
+        User user2 = new User( "bar@gmail.com");
         entityManager.persist(user2);
-        User user3 = new User(3, "zoo@gmail.com");
+        User user3 = new User( "zoo@gmail.com");
         entityManager.persist(user3);
 
         userRepository.deleteAll();
