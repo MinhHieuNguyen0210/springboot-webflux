@@ -51,12 +51,12 @@ class UserControllerTest {
     }
 
     @Test
-    void insertByUser() {
+    void insert() {
         User bodyData = User.builder().id(10).email("test@gmail.com").build();
         Mockito.when(userRepository.save(any())).thenReturn(User.builder().id(10).email("test@gmail.com").build());
 
         webTestClient.post()
-                .uri("/api/v1/")
+                .uri("/api/v1/user/add")
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(Mono.just(bodyData), User.class)
                 .exchange()

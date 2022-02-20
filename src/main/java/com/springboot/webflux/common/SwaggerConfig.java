@@ -24,7 +24,7 @@ public class SwaggerConfig {
 
     private ApiInfo metaData() {
         return new ApiInfoBuilder()
-                .title("Spring Boot WebfFlux")
+                .title("Spring Boot WebFlux")
                 .description("\"Spring Boot REST API for Friends Management\"")
                 .version("1.0.0")
                 .license("Apache License Version 2.0")

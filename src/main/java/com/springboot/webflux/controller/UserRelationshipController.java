@@ -4,6 +4,7 @@ import com.springboot.webflux.dto.FriendDto;
 import com.springboot.webflux.dto.ReceiveUpdateDto;
 import com.springboot.webflux.entity.UserRelationship;
 import com.springboot.webflux.service.UserRelationShipService;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
@@ -26,6 +27,7 @@ public class UserRelationshipController {
     }
 
     @GetMapping("user-relationship/{first}/{second}")
+    @ApiOperation(value = "API find user relation ship by user first and user second")
     public Mono<UserRelationship> findBy2Id(@PathVariable("first") Integer userFirstId, @PathVariable("second") Integer userSecondId) {
         return userRelationShipService.findByUserFirstIdAndUserSecondId(userFirstId, userSecondId);
     }

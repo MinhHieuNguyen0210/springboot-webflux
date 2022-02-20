@@ -34,7 +34,7 @@ public class UserServiceTest {
         SaveOrUpdateUserDto.Request request = SaveOrUpdateUserDto.Request.builder().id(10).email("test@gmail.com").build();
         Mockito.when(userRepository.save(any())).thenReturn(User.builder().id(10).email("test@gmail.com").build());
         StepVerifier
-                .create(userService.insertByUser(request))
+                .create(userService.insert(request))
                 .expectNextMatches(saved -> saved.getUser().getEmail().equalsIgnoreCase("test@gmail.com"))
                 .verifyComplete();
     }

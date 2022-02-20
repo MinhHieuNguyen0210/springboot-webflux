@@ -11,7 +11,7 @@ public interface UserService {
 
     Mono<LoadAllUserDto.Response> loadAllUser();
 
-    Mono<SaveOrUpdateUserDto.Response> insertByUser(SaveOrUpdateUserDto.Request userDto);
+    Mono<SaveOrUpdateUserDto.Response> insert(SaveOrUpdateUserDto.Request userDto);
 
     Mono<SaveOrUpdateUserDto.Response> update(Integer id, SaveOrUpdateUserDto.Request userDto);
 

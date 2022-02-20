@@ -30,7 +30,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Mono<SaveOrUpdateUserDto.Response> insertByUser(SaveOrUpdateUserDto.Request dto) {
+    public Mono<SaveOrUpdateUserDto.Response> insert(SaveOrUpdateUserDto.Request dto) {
         User entity = User.builder().id(dto.getId()).email(dto.getEmail()).build();
         Mono<User> user = Mono.just(userRepository.save(entity));
         return user.flatMap(data -> Mono.just(SaveOrUpdateUserDto.Response
