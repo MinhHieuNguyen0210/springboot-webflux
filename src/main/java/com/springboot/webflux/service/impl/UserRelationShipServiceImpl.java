@@ -38,7 +38,7 @@ public class UserRelationShipServiceImpl implements UserRelationShipService {
     @Override
     public Mono<UserRelationship> findByUserFirstIdAndUserSecondId(Integer userFirstId, Integer userSecondId) {
         return Mono.justOrEmpty(userRelationShipRepository.findByUserFirstIdAndUserSecondId(userFirstId, userSecondId)).
-                switchIfEmpty(Mono.error(RuntimeException::new));
+                switchIfEmpty(Mono.just(new UserRelationship()));
     }
 
     @Override
@@ -84,11 +84,13 @@ public class UserRelationShipServiceImpl implements UserRelationShipService {
 
         return findByUserFirstIdAndUserSecondId(relationship.getUserFirstId(), relationship.getUserSecondId()) // get type relation of 2
                 .flatMap(ur -> {
-                    if (AppConstant.RelationType.FRIEND == ur.getType()) {
-                        List<UserRelationship> userRelationshipList = new ArrayList<>();
-                        connectByRelationType(request.getFriends(), AppConstant.RelationType.BLOCK).subscribe(data -> userRelationshipList.add(data));
-                        return Flux.fromIterable(userRelationshipList).collectList()
-                                .flatMap(data -> Mono.just(FriendDto.Response.builder().success(true).relationships(data).build()));
+                    if (ur.getType() != null) {
+                        if (AppConstant.RelationType.FRIEND == ur.getType()) {
+                            List<UserRelationship> userRelationshipList = new ArrayList<>();
+                            connectByRelationType(request.getFriends(), AppConstant.RelationType.BLOCK).subscribe(data -> userRelationshipList.add(data));
+                            return Flux.fromIterable(userRelationshipList).collectList()
+                                    .flatMap(data -> Mono.just(FriendDto.Response.builder().success(true).relationships(data).build()));
+                        }
                     }
                     return Mono.just(FriendDto.Response.builder().success(true).relationships(null).build());
                 });

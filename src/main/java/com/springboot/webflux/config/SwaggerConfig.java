@@ -1,4 +1,4 @@
-package com.springboot.webflux.common;
+package com.springboot.webflux.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
