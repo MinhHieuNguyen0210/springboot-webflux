@@ -6,6 +6,7 @@ Friends Management API  with reactive stack web application
 - Hibernate/JPA
 - UnitTest with TestVerifier, Mockito, Junit, WebTestClient
 - Docker
+- Swagger Document API
 ## Features
 - Add Friend
 - Get Friends List
