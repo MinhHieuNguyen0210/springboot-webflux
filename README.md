@@ -2,7 +2,7 @@
 Friends Management API  with reactive stack web application
 
 ## Technology Stack
-- Spring Webflux
+- Spring WebFlux
 - Hibernate/JPA
 - UnitTest with TestVerifier, Mockito, Junit, WebTestClient
 - Docker
