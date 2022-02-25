@@ -7,6 +7,7 @@ import com.springboot.webflux.dto.SaveOrUpdateUserDto;
 import com.springboot.webflux.entity.User;
 import com.springboot.webflux.repository.UserRepository;
 import com.springboot.webflux.service.UserService;
+import exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -25,14 +26,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Mono<LoadAllUserDto.Response> loadAllUser() {
-        Mono<List<User>> users = Flux.fromIterable(userRepository.findAll()).collectList();
-        return users.flatMap((data -> Mono.just(LoadAllUserDto.Response.builder().success(true).users(data).build())));
+        return Flux.fromIterable(userRepository.findAll()).collectList()
+                .flatMap((data -> Mono.just(LoadAllUserDto.Response.builder()
+                        .success(true).users(data).build())));
     }
 
     @Override
     public Mono<SaveOrUpdateUserDto.Response> insert(SaveOrUpdateUserDto.Request dto) {
-        User entity = User.builder().id(dto.getId()).email(dto.getEmail()).build();
-        Mono<User> user = Mono.just(userRepository.save(entity));
+        Mono<User> user = Mono.just(userRepository
+                .save(User.builder().id(dto.getId()).email(dto.getEmail()).build()));
         return user.flatMap(data -> Mono.just(SaveOrUpdateUserDto.Response
                 .builder()
                 .success(true)
@@ -43,11 +45,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public Mono<SaveOrUpdateUserDto.Response> update(Integer id, SaveOrUpdateUserDto.Request dto) {
         User entity = User.builder().id(dto.getId()).email(dto.getEmail()).build();
-        if (findById(id).hasElement().block() == true) {
+        return findById(id).filter(i -> null != i).flatMap(i -> {
             Mono<User> user = Mono.just(userRepository.save(entity));
             return user.flatMap(data -> Mono.just(SaveOrUpdateUserDto.Response.builder().success(true).user(data).build()));
-        }
-        return Mono.error(new RuntimeException("update exception"));
+        }).doOnError(e -> Mono.error(new RuntimeException("update exception")));
     }
 
     @Override
@@ -70,7 +71,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Mono<User> findByEmail(String email) {
-        return Mono.just(userRepository.findByEmail(email).orElse(new User()));
+        return Mono.just(userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("not found")));
     }
 
     @Override
@@ -93,22 +94,10 @@ public class UserServiceImpl implements UserService {
         List<String> commonFriends = new ArrayList<>();
         return Mono.zip(mono1, mono2).flatMap((data) -> {
             Set<String> map = new HashSet<>();
-            for (String i : data.getT1()) {
-                map.add(i);
-            }
-            for (String i : data.getT2()) {
-                if (map.contains(i)) {
-                    commonFriends.add(i);
-                }
-            }
+            data.getT1().stream().forEach(item -> map.add(item));
+            data.getT2().stream().filter(item -> map.contains(item)).forEach(a ->commonFriends.add(a));
             return Mono.just(commonFriends);
         }).flatMap(cfs -> Flux.fromIterable(cfs).collectList()).flatMap(data
                 -> Mono.just(CommonFriendDto.Response.builder().friends(data).success(true).count(data.size()).build()));
-        // mono zip
-
-//        Mono<List<String>> monoCommonFriends = Flux.fromIterable(commonFriends).collectList();
-//        return monoCommonFriends.flatMap(data -> Mono.just(CommonFriendDto.Response.builder().friends(data).success(true).count(data.size()).build()));
     }
-
-
 }

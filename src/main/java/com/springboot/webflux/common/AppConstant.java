@@ -7,4 +7,5 @@ public class AppConstant {
         public static final int BLOCK = 2;
         public static final int SUBSCRIBE = 3;
     }
+
 }

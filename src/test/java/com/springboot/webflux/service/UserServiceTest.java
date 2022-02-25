@@ -114,11 +114,9 @@ public class UserServiceTest {
         Mockito.when(userRepository.findByEmail(userEmails.get(1))).thenReturn(Optional.of(new User(2, "userSecond@gmail.com")));
         Mockito.when(userRepository.getFriendsListById(2)).thenReturn(Arrays.asList("foo@gmail.com", "bar@gmail.com", "zoo@gmail.com"));
 
-        Predicate<CommonFriendDto.Response> p = response -> {
-            return response.getFriends().get(0).equals("foo@gmail.com")
-                    && response.getFriends().get(1).equals("bar@gmail.com")
-                    && response.getCount() == 2;
-        };
+        Predicate<CommonFriendDto.Response> p = response -> response.getFriends().get(0).equals("foo@gmail.com")
+                && response.getFriends().get(1).equals("bar@gmail.com")
+                && response.getCount() == 2;
 
         StepVerifier
                 .create(userService.getCommonFriend(request))
@@ -134,8 +132,7 @@ public class UserServiceTest {
 
         StepVerifier
                 .create(userService.deleteById(1))
-                .expectSubscription()
-                .verifyComplete();
+                .expectComplete();
     }
 
     @Test
