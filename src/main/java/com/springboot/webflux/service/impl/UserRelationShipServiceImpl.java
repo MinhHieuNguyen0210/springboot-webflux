@@ -17,6 +17,7 @@ import reactor.core.publisher.Mono;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserRelationShipServiceImpl implements UserRelationShipService {
@@ -65,9 +66,7 @@ public class UserRelationShipServiceImpl implements UserRelationShipService {
     @Override
     public Mono<FriendDto.Response> subscribeToUpdate(FriendDto.Request request) {
         Mono<UserRelationship> relationFirstUser = connectByRelationType(request.getFriends(), AppConstant.RelationType.SUBSCRIBE);
-        List<UserRelationship> userRelationshipList = new ArrayList<>();
-        relationFirstUser.subscribe(data -> userRelationshipList.add(data));
-        Mono<List<UserRelationship>> userMono = Flux.fromIterable(userRelationshipList).collectList();
+        Mono<List<UserRelationship>> userMono = relationFirstUser.flatMap(a -> Mono.just(List.of(a)));
         return userMono.flatMap(data -> Mono.just(FriendDto.Response.builder().success(true).relationships(data).build()));
     }
 
@@ -82,6 +81,11 @@ public class UserRelationShipServiceImpl implements UserRelationShipService {
                 .map(User::getId)
                 .subscribe(id -> relationship.setUserSecondId(id));
 
+        Mono<List<Integer>> list = Flux.fromIterable(request.getFriends()).flatMap(a -> userService.findByEmail(a)).map(User::getId).collectList();
+        list.doOnNext(list1 -> {
+            relationship.setUserFirstId(list1.get(0));
+            relationship.setUserFirstId(list1.get(1));
+        });
         return findByUserFirstIdAndUserSecondId(relationship.getUserFirstId(), relationship.getUserSecondId()) // get type relation of 2
                 .flatMap(ur -> {
                     if (ur.getType() != null) {
@@ -149,11 +153,9 @@ public class UserRelationShipServiceImpl implements UserRelationShipService {
                                     }
                                 });
                     }
-                    for (User user : data.getT3()) {
-                        if (request.getText().contains(user.getEmail())) {
-                            userEmailResult.add(user.getEmail());
-                        }
-                    }
+                    data.getT3().stream()
+                            .filter(user -> request.getText().contains(user.getEmail()))
+                            .forEach(u -> userEmailResult.add(u.getEmail()));
                     return Mono.just(userEmailResult);
                 })
                 .flatMap(data -> Flux.fromIterable(data).collectList()
