@@ -145,13 +145,18 @@ public class UserRelationShipServiceImpl implements UserRelationShipService {
                     for (Integer i : data.getT2()) {
                         findByUserFirstIdAndUserSecondId(data.getT1(), i)
                                 .map(UserRelationship::getType)
-                                .subscribe(type -> {
-                                    if (type == AppConstant.RelationType.FRIEND || type == AppConstant.RelationType.SUBSCRIBE) {
-                                        userService.findById(i)
-                                                .map(User::getEmail)
-                                                .subscribe(email -> userEmailResult.add(email));
-                                    }
-                                });
+                                .filter(type -> type == AppConstant.RelationType.FRIEND || type == AppConstant.RelationType.SUBSCRIBE)
+                                .doOnNext(item -> userService.findById(i)
+                                        .map(User::getEmail)
+                                        .subscribe(email -> userEmailResult.add(email)))
+                                .subscribe();
+//                                .subscribe(type -> {
+//                                    if (type == AppConstant.RelationType.FRIEND || type == AppConstant.RelationType.SUBSCRIBE) {
+//                                        userService.findById(i)
+//                                                .map(User::getEmail)
+//                                                .subscribe(email -> userEmailResult.add(email));
+//                                    }
+//                                });
                     }
                     data.getT3().stream()
                             .filter(user -> request.getText().contains(user.getEmail()))
