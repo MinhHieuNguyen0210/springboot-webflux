@@ -4,15 +4,12 @@ import com.springboot.webflux.dto.CommonFriendDto;
 import com.springboot.webflux.dto.GetFriendsListDto;
 import com.springboot.webflux.dto.LoadAllUserDto;
 import com.springboot.webflux.dto.SaveOrUpdateUserDto;
-import com.springboot.webflux.entity.User;
 import com.springboot.webflux.service.UserService;
-import exception.ResourceNotFoundException;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
-@RestControllerAdvice
 @RestController
 @RequestMapping("/api/v1")
 public class UserController {
@@ -28,7 +25,7 @@ public class UserController {
     @PostMapping("user/add")
     @ApiOperation(value = "API create new user")
     public Mono<SaveOrUpdateUserDto.Response> insert(@RequestBody SaveOrUpdateUserDto.Request request) {
-            return userService.insert(request);
+        return userService.insert(request);
     }
 
     @PostMapping("/user/friends-list")

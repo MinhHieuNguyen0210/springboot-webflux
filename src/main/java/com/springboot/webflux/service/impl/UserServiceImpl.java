@@ -95,7 +95,7 @@ public class UserServiceImpl implements UserService {
         return Mono.zip(mono1, mono2).flatMap((data) -> {
             Set<String> map = new HashSet<>();
             data.getT1().stream().forEach(item -> map.add(item));
-            data.getT2().stream().filter(item -> map.contains(item)).forEach(a ->commonFriends.add(a));
+            data.getT2().stream().filter(item -> map.contains(item)).forEach(a -> commonFriends.add(a));
             return Mono.just(commonFriends);
         }).flatMap(cfs -> Flux.fromIterable(cfs).collectList()).flatMap(data
                 -> Mono.just(CommonFriendDto.Response.builder().friends(data).success(true).count(data.size()).build()));

@@ -1,0 +1,19 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    username: postgres
+    url: jdbc:postgresql://localhost:5432/mypgdb
+    platform: postgres
+    type: org.postgresql.ds.PGSimpleDataSource
+    password: postgres
+  cache:
+    type: redis
+    redis:
+      cache-null-values: 'true'
+  jpa:
+    show-sql: 'true'
+server:
+  port: '8085'
+srping:
+  resdis:
+    port: '6379'

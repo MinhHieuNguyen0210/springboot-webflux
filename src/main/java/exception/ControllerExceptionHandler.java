@@ -2,17 +2,17 @@ package exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import reactor.core.publisher.Mono;
 
 import java.util.Date;
 
+@RestControllerAdvice("com.springboot.webflux.controller.UserController")
 public class ControllerExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)
-//    @ResponseStatus(HttpStatus.NOT_FOUND)
     public Mono<ErrorMessage> resourceNotFoundException(ResourceNotFoundException ex, WebRequest request) {
         ErrorMessage message = new ErrorMessage(
                 HttpStatus.NOT_FOUND.value(),
