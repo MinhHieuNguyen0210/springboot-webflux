@@ -92,6 +92,7 @@ public class UserServiceImpl implements UserService {
         Mono<List<String>> mono2 = getFriendsListByEmail(GetFriendsListDto.Request.builder().email(request.getFriends().get(1)).build())
                 .map(GetFriendsListDto.Response::getFriends);
         List<String> commonFriends = new ArrayList<>();
+        
         return Mono.zip(mono1, mono2).flatMap((data) -> {
             Set<String> map = new HashSet<>();
             data.getT1().stream().forEach(item -> map.add(item));
