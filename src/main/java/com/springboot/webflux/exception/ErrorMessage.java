@@ -1,4 +1,4 @@
-package exception;
+package com.springboot.webflux.exception;
 
 import lombok.Getter;
 

@@ -1,4 +1,4 @@
-package exception;
+package com.springboot.webflux.exception;
 
 import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.web.reactive.error.DefaultErrorAttributes;

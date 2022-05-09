@@ -7,7 +7,7 @@ import com.springboot.webflux.dto.SaveOrUpdateUserDto;
 import com.springboot.webflux.entity.User;
 import com.springboot.webflux.repository.UserRepository;
 import com.springboot.webflux.service.UserService;
-import exception.ResourceNotFoundException;
+import com.springboot.webflux.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -92,7 +92,7 @@ public class UserServiceImpl implements UserService {
         Mono<List<String>> mono2 = getFriendsListByEmail(GetFriendsListDto.Request.builder().email(request.getFriends().get(1)).build())
                 .map(GetFriendsListDto.Response::getFriends);
         List<String> commonFriends = new ArrayList<>();
-        
+
         return Mono.zip(mono1, mono2).flatMap((data) -> {
             Set<String> map = new HashSet<>();
             data.getT1().stream().forEach(item -> map.add(item));
